@@ -61,4 +61,6 @@ Once you have the number for your county, modify these lines in app.py:
 
 Run app.loadcounty() in Python
 
+Use web, Python, or other MongoDB tools to ensure a { "shape": "2dsphere" } index on your blocks collection.
+
 In the data directory, run import_geojson.py

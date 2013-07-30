@@ -91,5 +91,22 @@ def showall():
         allblocks = allblocks + str(block)
     return allblocks
 
+@app.route("/intersect")
+def intersect():
+    latlng = request.args.get('latlng', '40,-70').split(',')
+    latlng[0] = float(latlng[0])
+    latlng[1] = float(latlng[1])
+    latlng.reverse()
+    database.blocks.find({
+      "shape": {
+        "$geoIntersects": {
+          "$geometry": {
+            "type": "Point",
+            "coordinates": latlng
+          }
+        }
+      }
+    })
+    
 if __name__ == "__main__":
     app.run()
