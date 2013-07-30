@@ -1,4 +1,5 @@
 import os, sys, pymongo, requests
+from pymongo import MongoClient
 from flask import Flask
 app = Flask(__name__)
 
@@ -6,18 +7,23 @@ state_code = '25'
 county_code = '025'
 
 mongodb_uri = 'mongodb://localhost/ncensus'
+connection = None
 if(os.environ.has_key("MONGOLAB_URI")):
-  mongodb_uri = os.environ["MONGOLAB_URI"]
+    mongodb_uri = os.environ.get("MONGOLAB_URI")
 elif(os.environ.has_key("MONGOHQ_URL")):
-  mongodb_uri = os.environ["MONGOHQ_URL"]
+    mongodb_uri = os.environ.get("MONGOHQ_URL")
+    connection = MongoClient(mongodb_uri)
 elif(os.environ.has_key("MONGODB_URI")):
-  mongodb_uri = os.environ["MONGODB_URI"]
+    mongodb_uri = os.environ.get("MONGODB_URI")
 
 try:
-    conn = mongodb_uri[ : mongodb_uri.rfind('/') + 1 ]
-    connection = pymongo.Connection( conn )
-    db = mongodb_uri[ mongodb_uri.rfind('/') + 1 : ]
-    database = connection[ db ]
+    if(connection is None):
+      conn = mongodb_uri[ : mongodb_uri.rfind('/') + 1 ]
+      connection = pymongo.Connection( conn )
+      db = mongodb_uri[ mongodb_uri.rfind('/') + 1 : ]
+      database = connection[ db ]
+    else:
+      database = connection.ncensus
 except:
     print "MongoDB connection failed"
     connection = None
