@@ -97,7 +97,7 @@ def intersect():
     latlng[0] = float(latlng[0])
     latlng[1] = float(latlng[1])
     latlng.reverse()
-    database.blocks.find({
+    contains = database.blocks.find({
       "shape": {
         "$geoIntersects": {
           "$geometry": {
@@ -106,7 +106,13 @@ def intersect():
           }
         }
       }
+    }, {
+      "_id": 0
     })
+    allblocks = ""
+    for block in contains:
+      allblocks = allblocks + str(block)
+    return allblocks
     
 if __name__ == "__main__":
     app.run()
