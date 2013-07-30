@@ -58,3 +58,7 @@ Once you have the number for your county, modify these lines in app.py:
 
     state_code = '25'
     county_code = '025'
+
+Run app.loadcounty() in Python
+
+In the data directory, run import_geojson.py

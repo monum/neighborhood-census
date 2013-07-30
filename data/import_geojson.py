@@ -24,11 +24,14 @@ except:
     print "MongoDB connection failed"
     connection = None
 
-gj = json.load('blocks.geojson')
+gj = json.load(open('blocks.geojson', 'r'))
 
 for feature in gj["features"]:
     censusid = feature["properties"]["TRACTCE10"] + "/" + feature["properties"]["BLOCKCE"]
     
-    database.blocks.update({ "censusid": censusid }, { "shape": feature["geometry"] })
+    if(feature["geometry"]["type"] == "MultiPolygon"):
+        database.blocks.update({ "censusid": censusid }, { "mpoly": feature["geometry"] })    
+    else:
+        database.blocks.update({ "censusid": censusid }, { "shape": feature["geometry"] })
     
     print "mapped " + censusid

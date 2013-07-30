@@ -33,7 +33,6 @@ except:
 def hello():
     return "Neighborhoods + Census"
 
-@app.route("/loadcounty")
 def loadcounty():
     try:
         database.drop_collection('blocks')
