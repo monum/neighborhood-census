@@ -18,12 +18,12 @@ elif(os.environ.has_key("MONGODB_URI")):
 
 try:
     if(connection is None):
-      conn = mongodb_uri[ : mongodb_uri.rfind('/') + 1 ]
-      connection = pymongo.Connection( conn )
-      db = mongodb_uri[ mongodb_uri.rfind('/') + 1 : ]
-      database = connection[ db ]
+        conn = mongodb_uri[ : mongodb_uri.rfind('/') + 1 ]
+        connection = pymongo.Connection( conn )
+        db = mongodb_uri[ mongodb_uri.rfind('/') + 1 : ]
+        database = connection[ db ]
     else:
-      database = connection.ncensus
+        database = connection["ncensus"]
 except:
     print "MongoDB connection failed"
     connection = None
