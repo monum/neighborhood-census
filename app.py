@@ -23,10 +23,8 @@ try:
         db = mongodb_uri[ mongodb_uri.rfind('/') + 1 : ]
         database = connection[ db ]
     else:
-        database = connection.ncensus
-        user = 'heroku'
-        passwd = mongodb_uri[ mongodb_uri.find('heroku:') + 7 : mongodb_uri.find('@') ]
-        database.authenticate( user, passwd )
+        db = mongodb_uri[ mongodb_uri.rfind('/') + 1 : ]
+        database = connection[ db ]
 except:
     print "MongoDB connection failed"
     connection = None
