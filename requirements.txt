@@ -6,3 +6,5 @@ psycopg2==2.5.1
 wsgiref==0.1.2
 Shapely==1.2.14
 pyproj==1.9.3
+pymongo==2.1.1
+requests==1.2.3
