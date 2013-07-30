@@ -18,6 +18,27 @@ heroku create neighborhood-census --stack cedar --buildpack https://github.com/m
     
     shape(cop).area # Should give 268952044107.43506
 
+## MongoHQ addon for Heroku
+
+Free sandbox level of MongoDB from MongoHQ:
+
+    heroku addons:add mongohq:sandbox
+
+## Census GeoJSON
+
+Download 2010 Census block shapefile from TIGER. On http://www.census.gov/geo/maps-data/data/tiger-data.html
+
+- Select the last option: 2010 Census Population & Housing Unit Counts -- Blocks
+
+- Select your state or DC from the dropdown
+
+- Click GO to download a zipped shapefile
+
+- Open the shapefile in QGIS, ArcGIS (with Esri2Open toolbar), or another GIS tool.
+
+- Select all blocks with COUNTYFP10 equal to your county's ID (for example, '025')
+
+- Save selection as data/blocks.geojson in WGS84/EPSG:4326 projection and GeoJSON format.
 
 ## Census API
 

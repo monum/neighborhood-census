@@ -8,6 +8,8 @@ county_code = '025'
 mongodb_uri = 'mongodb://localhost/ncensus'
 if(os.environ.has_key("MONGOLAB_URI")):
   mongodb_uri = os.environ["MONGOLAB_URI"]
+elif(os.environ.has_key("MONGOHQ_URL")):
+  mongodb_uri = os.environ["MONGOHQ_URL"]
 elif(os.environ.has_key("MONGODB_URI")):
   mongodb_uri = os.environ["MONGODB_URI"]
 
@@ -26,6 +28,11 @@ def hello():
 
 @app.route("/loadcounty")
 def loadcounty():
+    try:
+        database.drop_collection('blocks')
+    except:
+        # database collection not yet made
+        r = 1
     stats = [ "P0010001" ]
     full_list = ""
     tractlist = requests.get('http://api.census.gov/data/2010/sf1?key=d343614e8f46717c1ffe54bd67ae76f6bf2c9b2d&get=NAME&for=tract:*&in=state:' + state_code + '+county:' + county_code)
