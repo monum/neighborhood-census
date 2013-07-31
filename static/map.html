@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Census On Demand</title>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css" />
+    <!--[if lte IE 8]>
+      <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css" />
+    <![endif]-->
+    <style type="text/css">
+html, body, #map{
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+    </style>
+  </head>
+  <body>
+    <div id="map">
+    </div>
+    <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript">
+var map = L.map("map").setView( [ 42.361207, -71.06506 ], 12 );
+map.attributionControl.setPrefix('');
+L.tileLayer('http://tile.stamen.com/terrain/{z}/{x}/{y}.jpg', {
+    attribution: 'Tiles &copy; Stamen Design, Data &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+var plotBlock = null;
+var plotMarker = L.marker( [ 42.361207, -71.06506 ], { draggable: true }).addTo(map);
+plotMarker.on('dragend', function(e){
+  if(plotBlock){
+    map.removeLayer(plotBlock);
+    plotBlock = null;
+  }
+  $.getJSON("/intersect?latlng=" + plotMarker.getLatLng().lat + "," + plotMarker.getLatLng().lng, function(block){
+    plotBlock = L.geoJson(block).addTo(map);
+  });
+});
+    </script>
+  </body>
+</html>
