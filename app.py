@@ -112,7 +112,7 @@ def intersect():
     allblocks = [ ]
     for block in contains:
       allblocks.append( block )
-    return jsonify( allblocks )
+    return jsonify( **allblocks )
     
 if __name__ == "__main__":
     app.run(debug=True)
