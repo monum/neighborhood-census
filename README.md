@@ -60,7 +60,8 @@ Once you have the number for your county, modify these lines in app.py:
     county_code = '025'
 
 Run app.loadcounty() in Python. This will start inserting block data into the 'blocks' collection. 
-You do not need to create a new collection for the blocks; Mongo will create the collection upon first use.
+You do not need to create a new collection for the blocks; Mongo will create the collection upon first use. You also do
+not need to create a particular database.
 
 Use web, Python, or other MongoDB tools to ensure a { "shape": "2dsphere" } index on your blocks collection e.g.,
     
