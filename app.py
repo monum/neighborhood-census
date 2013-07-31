@@ -30,7 +30,7 @@ except:
     connection = None
 
 @app.route("/")
-def hello():
+def index():
     return "Neighborhoods + Census"
 
 def loadcounty():
@@ -115,4 +115,4 @@ def intersect():
     return allblocks
     
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
