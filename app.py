@@ -1,6 +1,6 @@
-import os, sys, pymongo, requests
+import os, sys, pymongo, requests, json
 from pymongo import MongoClient
-from flask import Flask, request, jsonify
+from flask import Flask, request, Response
 app = Flask(__name__)
 
 state_code = '25'
@@ -112,7 +112,7 @@ def intersect():
     allblocks = [ ]
     for block in contains:
       allblocks.append( block )
-    return jsonify( **allblocks )
+    return Response(json.dumps(allblocks),  mimetype='application/json')
     
 if __name__ == "__main__":
     app.run(debug=True)
