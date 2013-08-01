@@ -57,6 +57,7 @@ plotPoly.on('edit', function(e){
   for(var pt=0;pt<latlngs.length;pt++){
     latlngs[pt] = [ latlngs[pt].lng.toFixed(6) * 1.0, latlngs[pt].lat.toFixed(6) * 1.0 ];
   }
+  latlngs.push( latlngs[0] );
   var poly = {
     "type": "Polygon",
     "coordinates": [ latlngs ]
