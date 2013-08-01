@@ -115,7 +115,7 @@ def intersect():
     return Response(json.dumps(allblocks),  mimetype='application/json')
 
 @app.route("/within")
-def intersect():    
+def within():    
     gj_geo = json.loads( request.args.get('geojson') )
     contains = database.blocks.find({
       "shape": {
