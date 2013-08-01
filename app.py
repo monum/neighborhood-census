@@ -113,6 +113,23 @@ def intersect():
     for block in contains:
       allblocks.append( block )
     return Response(json.dumps(allblocks),  mimetype='application/json')
-    
+
+@app.route("/within")
+def intersect():    
+    gj_geo = json.loads( request.args.get('geojson') )
+    contains = database.blocks.find({
+      "shape": {
+        "$geoIntersects": {
+          "$geometry": gj_geo
+        }
+      }
+    }, {
+      "_id": 0
+    })
+    allblocks = [ ]
+    for block in contains:
+      allblocks.append( block )
+    return Response(json.dumps(allblocks),  mimetype='application/json')
+
 if __name__ == "__main__":
     app.run(debug=True)

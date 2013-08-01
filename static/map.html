@@ -13,30 +13,55 @@ html, body, #map{
   margin: 0;
   padding: 0;
 }
+.leaflet-draw{
+  display: none;
+}
     </style>
   </head>
   <body>
     <div id="map">
     </div>
     <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
+    <script type="text/javascript" src="leaflet.draw.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script type="text/javascript">
-var map = L.map("map").setView( [ 42.361207, -71.06506 ], 12 );
+var map = L.map("map").setView( [ 42.354643, -71.059613 ], 14 );
 map.attributionControl.setPrefix('');
 L.tileLayer('http://tile.stamen.com/terrain/{z}/{x}/{y}.jpg', {
     attribution: 'Tiles &copy; Stamen Design, Data &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
 var plotBlocks = [ ];
-var plotMarker = L.marker( map.getCenter(), { draggable: true }).addTo(map);
-plotMarker.on('dragend', function(e){
+var plotPoly = L.polygon( [ map.getCenter(), new L.LatLng(map.getCenter().lat + 0.01, map.getCenter().lng - 0.01), new L.LatLng(map.getCenter().lat + 0.01, map.getCenter().lng + 0.01) ], { color: "#f00", weight: 3, editable: true } );
+
+var drawnItems = new L.FeatureGroup();
+map.addLayer(drawnItems);
+drawnItems.addLayer(plotPoly);
+
+var drawControl = new L.Control.Draw({
+  draw: false,
+  edit: {
+    featureGroup: drawnItems,
+    remove: false
+  }
+}).addTo(map);
+
+plotPoly.on('edit', function(e){
   if(plotBlocks.length){
     for(var b=0;b<plotBlocks.length;b++){
       map.removeLayer(plotBlocks[b]);
     }
     plotBlocks = [ ];
   }
-  $.getJSON("/intersect?latlng=" + plotMarker.getLatLng().lat + "," + plotMarker.getLatLng().lng, function(blocks){
+  var latlngs = plotPoly.getLatLngs().concat();
+  for(var pt=0;pt<latlngs.length;pt++){
+    latlngs[pt] = [ latlngs[pt].lng.toFixed(6) * 1.0, latlngs[pt].lat.toFixed(6) * 1.0 ];
+  }
+  var poly = {
+    "type": "Polygon",
+    "coordinates": [ latlngs ]
+  };
+  $.getJSON("/within?geojson=" + JSON.stringify( poly ), function(blocks){
     for(var b=0;b<blocks.length;b++){
       var myblock = L.geoJson(blocks[b].shape, {
         style: function(feature){
