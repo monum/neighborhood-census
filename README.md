@@ -1,6 +1,6 @@
 ## Set up the instance
 
-heroku create neighborhood-census --stack cedar --buildpack https://github.com/monum/heroku-buildpack-python-gis.git
+heroku create --stack cedar --buildpack https://github.com/monum/heroku-buildpack-python-gis.git
 
 ## MongoHQ addon for Heroku
 
