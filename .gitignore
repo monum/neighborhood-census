@@ -3,3 +3,6 @@ venv
 
 # Compiled Python
 *.pyc
+
+# Import Configuration File
+scripts/configuration.json
