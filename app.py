@@ -75,7 +75,10 @@ def loadcounty():
               'censusid': tractname + "/" + blockname,
             }
             for stat in stats:
-              blockstore[ stat ] = block[ statindexes[stat] ]
+              try:
+                blockstore[ stat ] = int( block[ statindexes[stat] ] )
+              except:
+                blockstore[ stat ] = block[ statindexes[stat] ]
             database.blocks.insert(blockstore)
             
             full_list = full_list + tractname + "/" + blockname + "\n"
