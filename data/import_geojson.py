@@ -30,8 +30,8 @@ for feature in gj["features"]:
     censusid = feature["properties"]["TRACTCE10"] + "/" + feature["properties"]["BLOCKCE"]
     
     if(feature["geometry"]["type"] == "MultiPolygon"):
-        database.blocks.update({ "censusid": censusid }, { "$set": { "mpoly": feature["geometry"] } })    
+        database.blocks.update({ "censusid": censusid }, { "$set": { "mpoly": feature["geometry"] }})    
     else:
-        database.blocks.update({ "censusid": censusid }, { "$set": { "shape": feature["geometry"] })
+        database.blocks.update({ "censusid": censusid }, { "$set": { "shape": feature["geometry"] }})
     
     print "mapped " + censusid
