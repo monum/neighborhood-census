@@ -1,6 +1,8 @@
 import os, sys, pymongo, requests, json
 from pymongo import MongoClient
 from flask import Flask, request, Response
+from shapely.geometry import asShape
+
 app = Flask(__name__)
 
 state_code = '25'
@@ -134,6 +136,41 @@ def within():
     for block in contains:
       allblocks.append( block )
     return Response(json.dumps(allblocks),  mimetype='application/json')
+
+@app.route("/estimate")
+def estimate():
+    gj_geo = json.loads( request.args.get('geojson') )
+    allblocks = [ ]
+    larger_bounds_shape = asShape(gj_geo)
+    estimates = { }
+    contains = database.blocks.find({
+      "shape": {
+        "$geoIntersects": {
+          "$geometry": gj_geo
+        }
+      }
+    }, {
+      "_id": 0
+    })
+    for block in contains:
+      #allblocks.append( block )
+      smaller_bounds = block["geometry"]
+      smaller_bounds_shape = asShape(smaller_bounds)
+      smaller_bounds_area = smaller_bounds_shape.area
+      intersection_area = smaller_bounds_shape.intersection(larger_bounds_shape).area
+      overlap_proportion = float(intersection_area/smaller_bounds_area)
+      
+      for key in block:
+        if(key == "shape" or key == "mpoly"):
+          continue
+        if(estimates.has_key(key)):
+          estimates[key] = estimates[key] + overlap_proportion * block[key]
+        else:
+          estimates[key] = overlap_proportion * block[key]
+      
+      allblocks.append(block["shape"])
+      
+    return Response(json.dumps({ "blocks": allblocks, "estimate": estimates }),  mimetype='application/json')
 
 if __name__ == "__main__":
     app.run(debug=True)
