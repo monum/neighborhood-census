@@ -39,7 +39,8 @@ def loadcounty():
     except:
         # database collection not yet made
         r = 1
-    stats = [ "P0010001" ]
+    # list statistics codes from http://www.census.gov/developers/data/sf1.xml
+    stats = [ "P0010001", "P0120001", "P0120025", "P0120049", "P0420001", "P0420008" ]
     full_list = ""
     tractlist = requests.get('http://api.census.gov/data/2010/sf1?key=d343614e8f46717c1ffe54bd67ae76f6bf2c9b2d&get=NAME&for=tract:*&in=state:' + state_code + '+county:' + county_code)
     tractlist = tractlist.json()
