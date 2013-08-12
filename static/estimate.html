@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Census On Demand</title>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css" />
+    <!--[if lte IE 8]>
+      <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css" />
+    <![endif]-->
+    <style type="text/css">
+html, body, #map{
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.leaflet-draw{
+  display: none;
+}
+    </style>
+  </head>
+  <body>
+    <div id="map">
+    </div>
+    <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
+    <script type="text/javascript" src="leaflet.draw.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript">
+var map = L.map("map").setView( [ 42.354643, -71.059613 ], 14 );
+map.attributionControl.setPrefix('');
+L.tileLayer('http://tile.stamen.com/terrain/{z}/{x}/{y}.jpg', {
+    attribution: 'Tiles &copy; Stamen Design, Data &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+var plotBlocks = [ ];
+var plotPoly = L.polygon( [ map.getCenter(), new L.LatLng(map.getCenter().lat + 0.01, map.getCenter().lng - 0.01), new L.LatLng(map.getCenter().lat + 0.01, map.getCenter().lng + 0.01) ], { color: "#f00", weight: 3, editable: true } );
+
+var drawnItems = new L.FeatureGroup();
+map.addLayer(drawnItems);
+drawnItems.addLayer(plotPoly);
+
+var drawControl = new L.Control.Draw({
+  draw: false,
+  edit: {
+    featureGroup: drawnItems,
+    remove: false
+  }
+}).addTo(map);
+
+var goodNames = {
+  "P0120025": "Men over 85",
+  "P0420001": "Group Living",
+  "P0420008": "Student Housing",
+  "P0010001": "Total Pop",
+  "P0120001": null,
+  "P0120049": "Women over 85"
+};
+
+plotPoly.on('edit', function(e){
+  if(plotBlocks.length){
+    for(var b=0;b<plotBlocks.length;b++){
+      map.removeLayer(plotBlocks[b]);
+    }
+    plotBlocks = [ ];
+  }
+  var latlngs = plotPoly.getLatLngs().concat();
+  for(var pt=0;pt<latlngs.length;pt++){
+    latlngs[pt] = [ latlngs[pt].lng.toFixed(6) * 1.0, latlngs[pt].lat.toFixed(6) * 1.0 ];
+  }
+  latlngs.push( latlngs[0] );
+  var poly = {
+    "type": "Polygon",
+    "coordinates": [ latlngs ]
+  };
+  $.getJSON("/estimate?geojson=" + JSON.stringify( poly ), function(response){
+    for(var b=0;b<response.blocks.length;b++){
+      var myblock = L.geoJson(response.blocks[b], {
+        style: function(feature){
+          return { weight: 1 };
+        },
+        onEachFeature: function(feature, layer){
+        }
+      }).addTo(map);
+      plotBlocks.push( myblock );
+    }
+    var popupTable = "<table border='1'>";
+    popupTable += "<tr><td>Variable</td><td>Estimate</td><td>Maximum</td></tr>";
+    for(var key in response.estimate){
+      if(goodNames[key] === null){
+        continue;
+      }
+      popupTable += "<tr><td>" + goodNames[key] + "</td><td>" + response.estimate[key] + "</td><td>" + response.overestimate[key] + "</td></tr>";
+    }
+    popupTable += "</table>";
+    L.popup()
+      .setLatLng(latlngs[0].reverse())
+      .setContent(popupTable)
+      .openOn(map);
+  });
+});
+    </script>
+  </body>
+</html>

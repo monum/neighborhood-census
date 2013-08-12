@@ -143,6 +143,7 @@ def estimate():
     allblocks = [ ]
     larger_bounds_shape = asShape(gj_geo)
     estimates = { }
+    overestimates = { }
     contains = database.blocks.find({
       "shape": {
         "$geoIntersects": {
@@ -154,23 +155,27 @@ def estimate():
     })
     for block in contains:
       #allblocks.append( block )
-      smaller_bounds = block["geometry"]
+      smaller_bounds = block["shape"]
       smaller_bounds_shape = asShape(smaller_bounds)
       smaller_bounds_area = smaller_bounds_shape.area
       intersection_area = smaller_bounds_shape.intersection(larger_bounds_shape).area
       overlap_proportion = float(intersection_area/smaller_bounds_area)
       
       for key in block:
-        if(key == "shape" or key == "mpoly"):
+        if(key == "shape" or key == "mpoly" or key == "censusid"):
           continue
         if(estimates.has_key(key)):
           estimates[key] = estimates[key] + overlap_proportion * block[key]
+          overestimates[key] = overestimates[key] + block[key]
         else:
-          estimates[key] = overlap_proportion * block[key]
+          estimates[key] = overlap_proportion * float(block[key])
+          overestimates[key] = block[key]
       
-      allblocks.append(block["shape"])
+      allblocks.append(smaller_bounds)
+    for key in estimates:
+      estimates[key] = round(estimates[key])
       
-    return Response(json.dumps({ "blocks": allblocks, "estimate": estimates }),  mimetype='application/json')
+    return Response(json.dumps({ "blocks": allblocks, "estimate": estimates, "overestimate": overestimates }),  mimetype='application/json')
 
 if __name__ == "__main__":
     app.run(debug=True)
