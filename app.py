@@ -3,6 +3,9 @@ from pymongo import MongoClient
 from flask import Flask, request, Response
 from shapely.geometry import asShape
 
+# Default Config
+DEBUG = True
+
 app = Flask(__name__)
 
 state_code = '25'
@@ -178,4 +181,5 @@ def estimate():
     return Response(json.dumps({ "blocks": allblocks, "estimate": estimates, "overestimate": overestimates }),  mimetype='application/json')
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
